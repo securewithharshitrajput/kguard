@@ -14,16 +14,23 @@ jobs:
       - name: Install eBPF toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang llvm libbpf-dev linux-tools-common linux-tools-generic
+          sudo apt-get install -y clang llvm libbpf-dev libelf-dev
+
+      # The runner's /usr/sbin/bpftool is a kernel-version wrapper that fails on
+      # the Azure kernel, so build a self-contained bpftool from source instead.
+      - name: Build bpftool from source
+        run: |
+          git clone --recurse-submodules --depth 1 https://github.com/libbpf/bpftool.git /tmp/bpftool
+          make -C /tmp/bpftool/src
+          sudo make -C /tmp/bpftool/src install
+          bpftool version
 
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
 
       - name: Generate vmlinux.h
-        run: |
-          which bpftool || sudo ln -sf "$(find /usr/lib/linux-tools* -name bpftool | head -1)" /usr/local/bin/bpftool
-          make vmlinux
+        run: make vmlinux
 
       - name: Generate eBPF bindings
         run: make generate
