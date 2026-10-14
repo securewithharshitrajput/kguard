@@ -1,7 +1,7 @@
 # build output
 /bin/
 
-# generated from kernel BTF — huge and kernel-specific, regenerate with `make vmlinux`.
+# generated from kernel BTF - huge and kernel-specific, regenerate with `make vmlinux`.
 # The bpf2go bindings (internal/loader/kguard_*_bpfel.go/.o) ARE committed so the
 # project builds without clang/bpftool; regenerate them with `make generate`.
 bpf/vmlinux.h
