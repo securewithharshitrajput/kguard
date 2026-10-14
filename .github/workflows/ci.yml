@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install eBPF toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang llvm libbpf-dev linux-tools-common linux-tools-generic
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Generate vmlinux.h
+        run: |
+          which bpftool || sudo ln -sf "$(find /usr/lib/linux-tools* -name bpftool | head -1)" /usr/local/bin/bpftool
+          make vmlinux
+
+      - name: Generate eBPF bindings
+        run: make generate
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Build
+        run: make build
+
+      - name: Validate rules
+        run: ./bin/kguard rules test -rules rules/default.yaml

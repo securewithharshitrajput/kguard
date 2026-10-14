@@ -1,0 +1,100 @@
+# kguard default detection rules.
+#
+# Each rule tests a single event. Within a field, a list means "any of" (OR);
+# across fields, all populated conditions must hold (AND). Rules reference
+# MITRE ATT&CK technique IDs so alerts map onto a standard taxonomy.
+#
+# Add your own rules here — no recompile needed. Validate with:
+#   kguard rules test -rules rules/default.yaml
+
+rules:
+  - id: webserver-spawns-shell
+    description: A web server process launched an interactive shell (possible web shell / RCE).
+    severity: high
+    mitre: T1505.003
+    match:
+      event: exec
+      parent_comm: [nginx, apache2, httpd, php-fpm, php, tomcat, node]
+      comm: [sh, bash, dash, zsh, ash]
+
+  - id: exec-from-tmp
+    description: A program was executed from a world-writable temp directory.
+    severity: high
+    mitre: T1059
+    match:
+      event: exec
+      file_prefix:
+        - /tmp/
+        - /dev/shm/
+        - /var/tmp/
+        - /run/shm/
+
+  - id: shell-makes-network-connection
+    description: A shell process opened an outbound network connection (possible reverse shell).
+    severity: high
+    mitre: T1059.004
+    match:
+      event: connect
+      comm: [sh, bash, dash, zsh, ash, ncat, nc, socat]
+
+  - id: download-piped-to-shell
+    description: A download tool was invoked with arguments that pipe into a shell.
+    severity: high
+    mitre: T1105
+    match:
+      event: exec
+      comm: [curl, wget]
+      args_contains: ["|sh", "| sh", "|bash", "| bash", "-O-", "-qO-"]
+
+  - id: read-etc-shadow
+    description: A non-system process opened /etc/shadow (credential dumping).
+    severity: critical
+    mitre: T1003.008
+    match:
+      event: file
+      file_prefix: [/etc/shadow]
+      min_uid: 1000
+
+  - id: modify-authorized-keys
+    description: A process touched an SSH authorized_keys file (possible backdoor).
+    severity: high
+    mitre: T1098.004
+    match:
+      event: file
+      file_contains: [/.ssh/authorized_keys]
+
+  - id: modify-persistence
+    description: A process wrote to a cron or systemd location (persistence).
+    severity: medium
+    mitre: T1053
+    match:
+      event: file
+      file_prefix:
+        - /etc/cron
+        - /var/spool/cron
+        - /etc/systemd/system/
+        - /etc/init.d/
+
+  - id: connect-to-mining-pool-port
+    description: Outbound connection to a port commonly used by crypto-mining pools.
+    severity: medium
+    mitre: T1496
+    match:
+      event: connect
+      dst_port: [3333, 4444, 5555, 7777, 14444, 45560]
+
+  - id: suspicious-discovery-tooling
+    description: Known reconnaissance / offensive tooling executed on the host.
+    severity: medium
+    mitre: T1046
+    match:
+      event: exec
+      comm: [nmap, masscan, nikto, hydra, sqlmap, linpeas, pspy]
+
+  - id: exec-deleted-or-memfd
+    description: A process executed from a deleted binary or an anonymous memory fd (fileless).
+    severity: high
+    mitre: T1620
+    match:
+      event: exec
+      file_contains: ["(deleted)", "memfd:"]
