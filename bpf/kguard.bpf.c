@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-// kguard.bpf.c — kernel-side eBPF programs for the kguard endpoint monitor.
+// kguard.bpf.c - kernel-side eBPF programs for the kguard endpoint monitor.
 //
 // These programs run inside the kernel, attached to tracepoints. They capture
 // process launches/exits and TCP connections, do cheap in-kernel filtering,

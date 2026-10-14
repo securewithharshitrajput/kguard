@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# simulate.sh — trigger kguard detections using only HARMLESS commands.
+# simulate.sh - trigger kguard detections using only HARMLESS commands.
 #
 # This runs benign stand-ins for attacker behavior so you can confirm that the
 # detection rules fire. It does NOT download or run any malware. Run it in a
@@ -26,4 +26,4 @@ cp /bin/true /tmp/pspy 2>/dev/null && /tmp/pspy; rm -f /tmp/pspy
 say "6. connect-to-mining-pool-port: attempt a connection to a mining port"
 timeout 2 bash -c 'exec 3<>/dev/tcp/127.0.0.1/3333' 2>/dev/null || true
 
-say "done — check the kguard terminal for ALERT lines"
+say "done - check the kguard terminal for ALERT lines"

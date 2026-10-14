@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0
-// common.h — event structs shared between the eBPF (kernel) side and Go (user) side.
+// common.h - event structs shared between the eBPF (kernel) side and Go (user) side.
 // The memory layout here MUST match the Go structs in internal/events/types.go.
 #ifndef __KGUARD_COMMON_H
 #define __KGUARD_COMMON_H

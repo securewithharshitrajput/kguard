@@ -50,7 +50,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprint(os.Stderr, `kguard — eBPF Linux endpoint monitor
+	fmt.Fprint(os.Stderr, `kguard - eBPF Linux endpoint monitor
 
 Commands:
   run           Start monitoring (requires root / CAP_BPF)
@@ -74,7 +74,7 @@ func runCmd(args []string) {
 	if err != nil {
 		fatal("loading rules: %v", err)
 	}
-	fmt.Printf("kguard %s — loaded %d rules from %s\n", version, ruleSet.Len(), *rulesPath)
+	fmt.Printf("kguard %s - loaded %d rules from %s\n", version, ruleSet.Len(), *rulesPath)
 
 	// Output sink.
 	sink := output.NewSink()

@@ -4,7 +4,7 @@
 # across fields, all populated conditions must hold (AND). Rules reference
 # MITRE ATT&CK technique IDs so alerts map onto a standard taxonomy.
 #
-# Add your own rules here — no recompile needed. Validate with:
+# Add your own rules here - no recompile needed. Validate with:
 #   kguard rules test -rules rules/default.yaml
 
 rules:
