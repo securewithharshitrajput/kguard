@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-label="kguard architecture: eBPF programs in the kernel stream events through a ring buffer to the Go user-space pipeline">
+  <defs>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f1b30"/>
+      <stop offset="1" stop-color="#0b1220"/>
+    </linearGradient>
+    <linearGradient id="kernel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2436"/>
+      <stop offset="1" stop-color="#0c1c2e"/>
+    </linearGradient>
+    <linearGradient id="user" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2130"/>
+      <stop offset="1" stop-color="#101b2e"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#34d399"/>
+    </marker>
+    <marker id="arrowDim" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#3b5168"/>
+    </marker>
+  </defs>
+
+  <rect x="1" y="1" width="898" height="418" rx="18" fill="url(#card)" stroke="#1f2d4d" stroke-width="2"/>
+
+  <!-- ===================== KERNEL SIDE ===================== -->
+  <g font-family="'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif">
+    <rect x="28" y="30" width="372" height="360" rx="14" fill="url(#kernel)" stroke="#1b3348" stroke-width="1.5"/>
+    <text x="48" y="60" font-size="15" font-weight="700" fill="#67e8f9" letter-spacing="1.5">LINUX KERNEL</text>
+    <text x="48" y="78" font-size="12" fill="#5b7793">eBPF programs (C) · CO-RE</text>
+
+    <!-- hook nodes -->
+    <g font-size="13" font-weight="600">
+      <g transform="translate(48,96)">
+        <rect width="200" height="42" rx="9" fill="#0b1a2b" stroke="#2a4a63"/>
+        <text x="16" y="19" fill="#e2e8f0">sched_process_exec</text>
+        <text x="16" y="34" font-size="10.5" font-weight="500" fill="#64829c">process launches</text>
+      </g>
+      <g transform="translate(48,146)">
+        <rect width="200" height="42" rx="9" fill="#0b1a2b" stroke="#2a4a63"/>
+        <text x="16" y="19" fill="#e2e8f0">sched_process_exit</text>
+        <text x="16" y="34" font-size="10.5" font-weight="500" fill="#64829c">process exits</text>
+      </g>
+      <g transform="translate(48,196)">
+        <rect width="200" height="42" rx="9" fill="#0b1a2b" stroke="#2a4a63"/>
+        <text x="16" y="19" fill="#e2e8f0">tcp_connect</text>
+        <text x="16" y="34" font-size="10.5" font-weight="500" fill="#64829c">outbound connections</text>
+      </g>
+      <g transform="translate(48,246)">
+        <rect width="200" height="42" rx="9" fill="#0b1a2b" stroke="#2a4a63"/>
+        <text x="16" y="19" fill="#e2e8f0">inet_csk_accept</text>
+        <text x="16" y="34" font-size="10.5" font-weight="500" fill="#64829c">inbound connections</text>
+      </g>
+    </g>
+
+    <!-- in-kernel filter -->
+    <g transform="translate(268,96)">
+      <rect width="112" height="192" rx="10" fill="#0a1626" stroke="#34d399" stroke-opacity="0.45" stroke-dasharray="4 3"/>
+      <text x="56" y="92" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6ee7b7">in-kernel</text>
+      <text x="56" y="110" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6ee7b7">filter</text>
+    </g>
+    <!-- hook -> filter arrows -->
+    <g stroke="#3b5168" stroke-width="1.6" fill="none">
+      <path d="M248,117 H266" marker-end="url(#arrowDim)"/>
+      <path d="M248,167 H266" marker-end="url(#arrowDim)"/>
+      <path d="M248,217 H266" marker-end="url(#arrowDim)"/>
+      <path d="M248,267 H266" marker-end="url(#arrowDim)"/>
+    </g>
+
+    <!-- ring buffer -->
+    <g transform="translate(300,320)">
+      <rect x="-70" y="0" width="150" height="46" rx="10" fill="#0b2030" stroke="url(#teal)" stroke-width="1.5"/>
+      <text x="5" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="#a7f3d0">ring buffer</text>
+      <text x="5" y="35" text-anchor="middle" font-size="10.5" fill="#5b8a86">256 KiB map</text>
+    </g>
+    <path d="M324,288 V318" stroke="#34d399" stroke-width="1.8" fill="none" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- ===================== BRIDGE ===================== -->
+  <path d="M400,343 H470" stroke="url(#teal)" stroke-width="2.4" fill="none" marker-end="url(#arrow)"/>
+  <text x="435" y="334" text-anchor="middle" font-family="'Segoe UI',Ubuntu,sans-serif" font-size="10.5" font-weight="600" fill="#6ee7b7">events</text>
+
+  <!-- ===================== USER SPACE ===================== -->
+  <g font-family="'Segoe UI',Ubuntu,Helvetica,Arial,sans-serif">
+    <rect x="472" y="30" width="400" height="360" rx="14" fill="url(#user)" stroke="#223450" stroke-width="1.5"/>
+    <text x="492" y="60" font-size="15" font-weight="700" fill="#93c5fd" letter-spacing="1.5">USER SPACE · Go</text>
+    <text x="492" y="78" font-size="12" fill="#5b7793">kguard pipeline</text>
+
+    <g font-size="13">
+      <g transform="translate(492,96)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#2b4160"/>
+        <text x="14" y="25" font-weight="700" fill="#e2e8f0">loader</text>
+        <text x="92" y="25" font-weight="500" fill="#7e97b3">load + attach eBPF, read the ring buffer</text>
+      </g>
+      <g transform="translate(492,144)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#2b4160"/>
+        <text x="14" y="25" font-weight="700" fill="#e2e8f0">events</text>
+        <text x="92" y="25" font-weight="500" fill="#7e97b3">decode raw records into Go structs</text>
+      </g>
+      <g transform="translate(492,192)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#2b4160"/>
+        <text x="14" y="25" font-weight="700" fill="#e2e8f0">proctree</text>
+        <text x="104" y="25" font-weight="500" fill="#7e97b3">live lineage: nginx → bash → curl</text>
+      </g>
+      <g transform="translate(492,240)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#2b4160"/>
+        <text x="14" y="25" font-weight="700" fill="#e2e8f0">enrich</text>
+        <text x="92" y="25" font-weight="500" fill="#7e97b3">user · container · SHA-256 of binary</text>
+      </g>
+      <g transform="translate(492,288)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#34d399" stroke-opacity="0.5"/>
+        <text x="14" y="25" font-weight="700" fill="#6ee7b7">rules</text>
+        <text x="92" y="25" font-weight="500" fill="#9fb6cf">match YAML detections → MITRE ATT&amp;CK</text>
+      </g>
+      <g transform="translate(492,336)">
+        <rect width="360" height="40" rx="9" fill="#0c1b2e" stroke="#2b4160"/>
+        <text x="14" y="25" font-weight="700" fill="#e2e8f0">output</text>
+        <text x="92" y="25" font-weight="500" fill="#7e97b3">console · JSONL · webhook</text>
+      </g>
+    </g>
+
+    <!-- flow arrows down the pipeline -->
+    <g stroke="#2f4763" stroke-width="1.5" fill="none">
+      <path d="M672,136 V142" marker-end="url(#arrowDim)"/>
+      <path d="M672,184 V190" marker-end="url(#arrowDim)"/>
+      <path d="M672,232 V238" marker-end="url(#arrowDim)"/>
+      <path d="M672,280 V286" marker-end="url(#arrowDim)"/>
+      <path d="M672,328 V334" marker-end="url(#arrowDim)"/>
+    </g>
+  </g>
+</svg>

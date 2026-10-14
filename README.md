@@ -20,9 +20,11 @@ identity and lineage context, and alerts on attacker behavior mapped to
 
 [Quickstart](#quickstart) · [Detections](#what-it-detects) · [How it works](#how-it-works) · [Why kguard](#why-kguard) · [Roadmap](#roadmap)
 
-</div>
+<br>
 
----
+<img src="assets/divider.svg" alt="" width="100%">
+
+</div>
 
 ## Overview
 
@@ -42,15 +44,54 @@ products — small enough to understand in an afternoon, capable enough to catch
 
 ## Highlights
 
-| Capability | Detail |
-|---|---|
-| **Kernel-level process telemetry** | Every `execve` and exit — PID, PPID, UID, path, arguments |
-| **Network visibility** | Outbound (`tcp_connect`) and inbound (`inet_csk_accept`) IPv4 flows |
-| **Rich enrichment** | Username, container ID (Docker / containerd / Kubernetes), SHA-256 of the binary, full process lineage |
-| **YAML detection engine** | Add detections without recompiling — each mapped to MITRE ATT&CK |
-| **Pluggable outputs** | Colorized console, newline-delimited JSON for a SIEM, Slack-compatible webhooks |
-| **Low overhead** | In-kernel filtering and a 256 KiB ring buffer; irrelevant events never reach user space |
-| **Portable (CO-RE)** | *Compile Once, Run Everywhere* via BTF — build on one kernel, run on others |
+<table>
+<tr>
+<td width="33%" valign="top">
+
+**Kernel-level telemetry**
+
+<sub>Every `execve` and exit — PID, PPID, UID, executable path, and arguments, straight from the source.</sub>
+
+</td>
+<td width="33%" valign="top">
+
+**Network visibility**
+
+<sub>Outbound (`tcp_connect`) and inbound (`inet_csk_accept`) IPv4 flows with addresses and ports.</sub>
+
+</td>
+<td width="33%" valign="top">
+
+**Rich enrichment**
+
+<sub>Username, container ID (Docker / containerd / K8s), SHA-256 of the binary, and full process lineage.</sub>
+
+</td>
+</tr>
+<tr>
+<td valign="top">
+
+**YAML detection engine**
+
+<sub>Add detections without recompiling — each rule mapped to a MITRE ATT&CK technique.</sub>
+
+</td>
+<td valign="top">
+
+**Pluggable outputs**
+
+<sub>Colorized console, newline-delimited JSON for your SIEM, and Slack-compatible webhooks.</sub>
+
+</td>
+<td valign="top">
+
+**Lightweight & portable**
+
+<sub>In-kernel filtering + a 256 KiB ring buffer, and CO-RE so you build once and run across kernels.</sub>
+
+</td>
+</tr>
+</table>
 
 ## Quickstart
 
@@ -104,19 +145,9 @@ CONN  pid=48213 comm=curl -> 169.254.169.254:80
 
 ## How it works
 
-```
-            LINUX KERNEL                                 USER SPACE (Go)
- ┌───────────────────────────────┐        ┌────────────────────────────────────────┐
- │ eBPF programs (C)             │        │ kguard                                 │
- │                               │        │                                        │
- │ sched_process_exec ─┐         │  ring  │ loader   load + attach eBPF, read ring │
- │ sched_process_exit ─┤         │ buffer │ events   decode raw records            │
- │ tcp_connect        ─┼─ filter ─────────►│ proctree keep live process lineage     │
- │ inet_csk_accept    ─┘ in-kernel        │ enrich   user, container, exe SHA-256  │
- │                               │        │ rules    match YAML detections         │
- │  (ring buffer map)            │        │ output   console / JSONL / webhook     │
- └───────────────────────────────┘        └────────────────────────────────────────┘
-```
+<div align="center">
+<img src="assets/architecture.svg" alt="kguard architecture — eBPF programs in the kernel stream filtered events through a ring buffer into the Go user-space pipeline" width="100%">
+</div>
 
 Events are filtered **in the kernel** so a busy host does not flood user space — only the records
 that matter cross the boundary, through a 256 KiB ring buffer. On the Go side, a small pipeline
